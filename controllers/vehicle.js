@@ -36,7 +36,7 @@ exports.getAllVehicle = async (req, res) => {
     const sort = req.query.sort || 'created_at'
     const order = req.query.order || 'ASC'
 
-    const countVehicle = await vehicleModel.getCountVehicle(id)
+    const countVehicle = await vehicleModel.getCountVehicle({search})
 
     const totalItem = countVehicle[0].total
     const totalPage = Math.ceil(totalItem / limit)
@@ -51,6 +51,51 @@ exports.getAllVehicle = async (req, res) => {
       return res.json({
         success: true,
         message: 'Get all vehicle data success',
+        result: {
+          page,
+          totalItem: totalItem,
+          totalPage: totalPage,
+          data: vehicles,
+        },
+      })
+    } else {
+      return res.status(404).json({
+        success: false,
+        message: 'Page not found',
+      })
+    }
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.message || 'Unknown error'
+    })
+  }
+}
+
+exports.getVehicleByCategory = async (req, res) => {
+  try {
+    const page = Number(req.query.page) || 1
+    const limit = Number(req.query.limit) || 2
+    const offset = limit * (page - 1)
+    const category = req.query.category || 1
+    const sort = req.query.sort || 'created_at'
+    const order = req.query.order || 'ASC'
+
+    const countVehicle = await vehicleModel.getCountVehicleByCategory({category})
+
+    const totalItem = countVehicle[0].total
+    const totalPage = Math.ceil(totalItem / limit)
+    if (totalPage >= page) {
+      const vehicles = await vehicleModel.getVehicleByCategory({
+        limit,
+        offset,
+        category,
+        sort,
+        order
+      })
+      return res.json({
+        success: true,
+        message: `Get vehicle category ${category} success`,
         result: {
           page,
           totalItem: totalItem,

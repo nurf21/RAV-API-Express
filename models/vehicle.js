@@ -33,9 +33,31 @@ exports.getFilteredVehicle = (condition) => {
   })
 }
 
+exports.getVehicleByCategory = (condition) => {
+  return new Promise((resolve, reject) => {
+    db.query(`SELECT * FROM vehicle WHERE category_id = ${condition.category} ORDER BY ${condition.sort} ${condition.order} LIMIT ${condition.limit} OFFSET ${condition.offset}`, (err, result) => {
+      if (err) {
+        return reject(err)
+      }
+      return resolve(result)
+    })
+  })
+}
+
 exports.getCountVehicle = (condition) => {
   return new Promise((resolve, reject) => {
     db.query(`SELECT COUNT(*) as total FROM vehicle WHERE vehicle_name LIKE "%${condition.search}%"`, (err, result) => {
+      if (err) {
+        return reject(err)
+      }
+      return resolve(result)
+    })
+  })
+}
+
+exports.getCountVehicleByCategory = (condition) => {
+  return new Promise((resolve, reject) => {
+    db.query(`SELECT COUNT(*) as total FROM vehicle WHERE category_id = ${condition.category}`, (err, result) => {
       if (err) {
         return reject(err)
       }
