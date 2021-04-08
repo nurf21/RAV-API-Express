@@ -36,7 +36,7 @@ exports.getAllVehicle = async (req, res) => {
     const sort = req.query.sort || 'created_at'
     const order = req.query.order || 'ASC'
 
-    const countVehicle = await vehicleModel.getCountVehicle({search})
+    const countVehicle = await vehicleModel.getCountVehicle(id)
 
     const totalItem = countVehicle[0].total
     const totalPage = Math.ceil(totalItem / limit)
@@ -157,6 +157,9 @@ exports.deleteVehicle = async (req, res) => {
       result: checkId
     })
   } catch (error) {
-    
+    return res.status(400).json({
+      success: false,
+      message: error.message || 'Unknown error'
+    })
   }
 }
